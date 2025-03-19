@@ -11,6 +11,8 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import Divider from '@mui/material/Divider';
 import Swal from 'sweetalert2';
+import { todoService } from "../services/todoService";
+import { useEffect } from "react";
 
 const style = {
   py: 0,
@@ -25,12 +27,82 @@ const style = {
 const ToDoListItem = () => {
 
   const [inputValue, setInputValue] = useState('')
-  const [listItems, setListItems] = useState([
-    { liKey: 0, content: "Make the bed" },
-    { liKey: 1, content: "Wash my hand" },
-    { liKey: 2, content: "Eat" },
-    { liKey: 3, content: "Walk the dog" }
-  ]);
+  const [listItems, setListItems] = useState([]);
+
+  const getUserIn = async () => {
+    try {
+      const bringUsers = await todoService.getUsers();
+      const taskLabels = bringUsers.map(task => ({
+        label: task.label,
+        id: task.id,
+      }));
+      console.log(taskLabels);
+      setListItems(taskLabels);
+    } catch (error) {
+
+    }
+  }
+
+  useEffect(() => {
+    getUserIn()
+  }, [])
+
+  const getCreateUser = async () => {
+    try {
+      const newUser = {
+        label: inputValue.trim(),
+        is_done: "false",
+      };
+
+      const makeUsers = await todoService.createUser(newUser)
+      console.log(createdTask);
+
+      setListItems(prevList => [...prevList, makeUsers]);
+      setInputValue('');
+    } catch (error) {
+
+    }
+  }
+
+  // const getDeleteUser = async (index) => {
+  //   try {
+  //     const userDeleted = listItems[index];
+  //     const userName = userDeleted.name;
+  //     await todoService.deleteUser(userName);
+  //     const newList = listItems.filter((_, i) => i !== index);
+  //     setListItems(newList);
+  //   } catch (error) {
+
+  //   }
+  // }
+
+
+  const getDeleteUser = async (index) => {
+    try {
+      const taskToDelete = listItems[index];
+      const taskId = taskToDelete.id;
+      console.log(taskId)
+      await todoService.deleteUser(taskId);
+      const newList = listItems.filter((_, i) => i !== index);
+      setListItems(newList);
+    } catch (error) {
+
+    }
+  }
+
+
+  const getDeleteAllUsers = async () => {
+    try {
+      for (let user of listItems) {
+        const usersIDs = user.id;
+        await todoService.deleteAllUsers(usersIDs)
+      };
+
+      // setListItems([]);
+    } catch (error) {
+
+    }
+  }
 
   const changeInputValue = (e) => {
     setInputValue(e.target.value)
@@ -38,13 +110,12 @@ const ToDoListItem = () => {
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && inputValue.trim()) {
-      const newTask = {
-        liKey: Date.now(),
-        content: inputValue
-      }
-      setListItems([...listItems, newTask]);
-      setInputValue('')
+      getCreateUser()
     }
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
   }
 
   const handleDelete = (index) => {
@@ -55,8 +126,10 @@ const ToDoListItem = () => {
       denyButtonText: `Cancel`
     }).then((result) => {
       if (result.isConfirmed) {
-        const newList = listItems.filter((_, i) => i !== index);
-        setListItems(newList);
+        getDeleteUser(index)
+
+        // const newList = listItems.filter((_, i) => i !== index);
+        // setListItems(newList);
       } else if (result.isDenied) {
         Swal.fire("You didn't delete any tasks", "", "info");
       }
@@ -69,21 +142,24 @@ const ToDoListItem = () => {
   return (
     <div className='container-fluid p-2'>
       <List sx={style} style={{ margin: "auto" }}>
-        <ListItem>
-          <input placeholder={listItems.length === 0 ? "Add a task, we are empty" : "What needs to be done?"} type="text"
-            value={inputValue}
-            onChange={changeInputValue}
-            onKeyDown={handleKeyDown}
-            style={{ border: "none", outline: "none" }} />
-        </ListItem>
-        <Divider component="li" />
-        {listItems.map((item, index) => (
+        <button onClick={getDeleteAllUsers}>Borrar todo</button>
+        <form onSubmit={handleSubmit}>
+          <ListItem>
+            <input placeholder={listItems.length === 0 ? "Add a task, we are empty" : "What needs to be done?"} type="text"
+              value={inputValue}
+              onChange={changeInputValue}
+              onKeyDown={handleKeyDown}
+              style={{ border: "none", outline: "none" }} />
+          </ListItem>
+          <Divider component="li" />
+        </form>
+        {listItems.map((task, index) => (
           <React.Fragment key={index}>
-            <ListItem
+            <ListItem id={task.id}
               onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f1f1f1'}
               onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
               onClick={() => handleDelete(index)}>
-              {listItems[index].content}
+              {task.label}
             </ListItem>
             <Divider component="li" />
           </React.Fragment>
@@ -92,5 +168,6 @@ const ToDoListItem = () => {
     </div>
   )
 }
+
 
 export default ToDoListItem
