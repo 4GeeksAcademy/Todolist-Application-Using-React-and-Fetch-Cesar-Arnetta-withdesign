@@ -1,10 +1,3 @@
-// Your app needs to look like this.
-// The tasks are added when the user presses enter on the keyboard, or you can have your own button.
-// The delete icon shows only when the task is hovered.
-// The user can add as many tasks as they want.
-// When there are no tasks the list should say "No tasks, add a task"
-// There is no way to update a task, the user will have to delete and create again.
-
 import { useState } from "react"
 import * as React from 'react';
 import List from '@mui/material/List';
@@ -29,14 +22,49 @@ const ToDoListItem = () => {
   const [inputValue, setInputValue] = useState('')
   const [listItems, setListItems] = useState([]);
 
-  const getUserIn = async () => {
+  // crear usuario, borrarlo y comprobar a nivel usuario si está creado el usuario
+
+  const createUser = async () => {
     try {
-      const bringUsers = await todoService.getUsers();
-      const taskLabels = bringUsers.map(task => ({
+      const user = "cesar_arnetta";
+      await todoService.createUser(user)
+    } catch (error) {
+
+    }
+  }
+  const deleteUser = async () => {
+    try {
+      const user = "cesar_arnetta";
+      await todoService.deleteUser(user);
+      setListItems([]);
+    } catch (error) {
+
+    }
+  }
+
+  const checkUserCreated = async () => {
+    try {
+      const user = "cesar_arnetta";
+      const checkUser = await todoService.getUser(user);
+      if (checkUser && checkUser.name === user) {
+        alert("The user Cesar Arnetta exist")
+      } else {
+        alert("The user Cesar Arnetta does not exist, please hit 'the create user button'")
+      }
+    } catch (error) {
+
+    }
+  }
+
+  //traer tareas del usuario creado
+
+  const getTaskIn = async () => {
+    try {
+      const bringTask = await todoService.getTask();
+      const taskLabels = bringTask.map(task => ({
         label: task.label,
         id: task.id,
       }));
-      console.log(taskLabels);
       setListItems(taskLabels);
     } catch (error) {
 
@@ -44,65 +72,26 @@ const ToDoListItem = () => {
   }
 
   useEffect(() => {
-    getUserIn()
+    getTaskIn()
   }, [])
 
-  const getCreateUser = async () => {
+  // crear tareas
+
+  const getCreateTask = async () => {
     try {
       const newUser = {
         label: inputValue.trim(),
         is_done: "false",
       };
-
-      const makeUsers = await todoService.createUser(newUser)
-      console.log(createdTask);
-
-      setListItems(prevList => [...prevList, makeUsers]);
+      const makeTasks = await todoService.createTask(newUser)
+      setListItems(prevList => [...prevList, makeTasks]);
       setInputValue('');
     } catch (error) {
 
     }
   }
 
-  // const getDeleteUser = async (index) => {
-  //   try {
-  //     const userDeleted = listItems[index];
-  //     const userName = userDeleted.name;
-  //     await todoService.deleteUser(userName);
-  //     const newList = listItems.filter((_, i) => i !== index);
-  //     setListItems(newList);
-  //   } catch (error) {
-
-  //   }
-  // }
-
-
-  const getDeleteUser = async (index) => {
-    try {
-      const taskToDelete = listItems[index];
-      const taskId = taskToDelete.id;
-      console.log(taskId)
-      await todoService.deleteUser(taskId);
-      const newList = listItems.filter((_, i) => i !== index);
-      setListItems(newList);
-    } catch (error) {
-
-    }
-  }
-
-
-  const getDeleteAllUsers = async () => {
-    try {
-      for (let user of listItems) {
-        const usersIDs = user.id;
-        await todoService.deleteAllUsers(usersIDs)
-      };
-
-      // setListItems([]);
-    } catch (error) {
-
-    }
-  }
+  // input controlado
 
   const changeInputValue = (e) => {
     setInputValue(e.target.value)
@@ -110,12 +99,27 @@ const ToDoListItem = () => {
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && inputValue.trim()) {
-      getCreateUser()
+      getCreateTask()
     }
   }
 
   const handleSubmit = (e) => {
     e.preventDefault();
+  }
+
+
+  // eliminar tarea individualmente
+
+  const getDeleteTask = async (index) => {
+    try {
+      const taskToDelete = listItems[index];
+      const taskId = taskToDelete.id;
+      await todoService.deleteTask(taskId);
+      const newList = listItems.filter((_, i) => i !== index);
+      setListItems(newList);
+    } catch (error) {
+
+    }
   }
 
   const handleDelete = (index) => {
@@ -126,7 +130,7 @@ const ToDoListItem = () => {
       denyButtonText: `Cancel`
     }).then((result) => {
       if (result.isConfirmed) {
-        getDeleteUser(index)
+        getDeleteTask(index)
 
         // const newList = listItems.filter((_, i) => i !== index);
         // setListItems(newList);
@@ -138,11 +142,30 @@ const ToDoListItem = () => {
 
   // https://sweetalert2.github.io/
 
+  // eliminar tareas masivamente 
+
+  const getDeleteAllTasks = async () => {
+    try {
+      for (let user of listItems) {
+        const usersIDs = user.id;
+        await todoService.deleteAllTasks(usersIDs);
+      };
+
+      setListItems([]);
+    } catch (error) {
+
+    }
+  }
 
   return (
     <div className='container-fluid p-2'>
       <List sx={style} style={{ margin: "auto" }}>
-        <button onClick={getDeleteAllUsers}>Borrar todo</button>
+        <div className="text-center p-2">
+          <button className="btn btn-primary p-2 m-2" onClick={getDeleteAllTasks}>Errase all tasks</button>
+          <button className="btn btn-primary p-2 m-2" onClick={createUser}>Create user</button>
+          <button className="btn btn-primary p-2 m-2" onClick={deleteUser}>Delete user</button>
+          <button className="btn btn-primary p-2 m-2" onClick={checkUserCreated}>Check user status</button>
+        </div>
         <form onSubmit={handleSubmit}>
           <ListItem>
             <input placeholder={listItems.length === 0 ? "Add a task, we are empty" : "What needs to be done?"} type="text"

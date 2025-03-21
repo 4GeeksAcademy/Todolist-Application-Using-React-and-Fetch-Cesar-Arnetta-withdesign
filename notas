@@ -1,0 +1,101 @@
+// createTask: async (user) => {
+//         try {
+//             // const request = await fetch(`${baseUrl}/todo/${user}`
+//             const request = await fetch(`${baseUrl}/todo/todos/cesar_arnetta`, {
+//                 method: "POST",
+//                 headers: {
+//                     accept: 'application/json',
+//                     'Content-Type': 'application/json'
+//                 },
+//                 // body: JSON.stringify(user)
+//                 body: JSON.stringify({
+//                     label: user.label,
+//                     is_done: user.is_done,
+//                 }),
+//             });
+//             const response = await request.json();
+//             return response;
+//         } catch (error) {
+
+//         }
+//     },
+
+//     getUser: async (user) => {
+//         try {
+//             // const request = await fetch(`${baseUrl}/todo/users?offset=0&limit=20`
+//             const request = await fetch(`${baseUrl}/todo/users/${user}`, {
+//                 headers: {
+//                     accept: 'application/json'
+//                 }
+//             })
+//             const response = await request.json()
+//             return response
+//         } catch (error) {
+
+//         }
+//     },
+
+//       // const getDeleteUser = async (index) => {
+//   //   try {
+//   //     const userDeleted = listItems[index];
+//   //     const userName = userDeleted.name;
+//   //     await todoService.deleteUser(userName);
+//   //     const newList = listItems.filter((_, i) => i !== index);
+//   //     setListItems(newList);
+//   //   } catch (error) {
+
+//   //   }
+//   // }
+
+//   getTask: async () => {
+//     try {
+//         // const request = await fetch(`${baseUrl}/todo/users?offset=0&limit=20`
+//         const request = await fetch(`${baseUrl}/todo/users/cesar_arnetta`, {
+//             headers: {
+//                 accept: 'application/json'
+//             }
+//         })
+//         const response = await request.json()
+//         return response.todos
+//     } catch (error) {
+
+//     }
+// },
+
+
+
+// createUser: async (user) => {
+//     try {
+//         const request = await fetch(`${baseUrl}/todo/users/${user}`, {
+//             method: "POST",
+//             headers: {
+//                 accept: 'application/json',
+//                 'Content-Type': 'application/json'
+//             },
+//             // body: JSON.stringify(user)
+//             body: JSON.stringify(user),
+//         });
+//         const response = await request.json();
+//         return response;
+//     } catch (error) {
+
+//     }
+// },
+
+
+// deleteTask: async (user) => {
+//     try {
+//         // const request = await fetch(`${baseUrl}/todo/users/${user}
+//         const request = await fetch(`${baseUrl}/todo/todos/${user}`, {
+//             method: "DELETE",
+//             headers: {
+//                 accept: 'application/json',
+//                 'Content-Type': 'application/json'
+//             },
+//         });
+//         const response = await request.json();
+//         return response;
+//     } catch (error) {
+
+//     }
+// },
