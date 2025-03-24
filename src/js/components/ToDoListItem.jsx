@@ -161,6 +161,8 @@ const ToDoListItem = () => {
     <div className='container-fluid p-2'>
       <List sx={style} style={{ margin: "auto" }}>
         <div className="text-center p-2">
+          <h2>Instructions</h2>
+          <p style={{ textAlign: "justify" }}>First, check if the user was created using the "Check user status" button. If it wasn't, press the "Create user" button, them type a task and press "Enter" in your keyboard. You can delete the user and therefore all the tasks from it by "Delete user" button.</p>
           <button className="btn btn-primary p-2 m-2" onClick={getDeleteAllTasks}>Errase all tasks</button>
           <button className="btn btn-primary p-2 m-2" onClick={createUser}>Create user</button>
           <button className="btn btn-primary p-2 m-2" onClick={deleteUser}>Delete user</button>
